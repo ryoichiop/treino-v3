@@ -90,7 +90,7 @@
   .ex__how li::before{content:counter(st);position:absolute;left:0;top:3px;width:19px;height:19px;border-radius:50%;background:var(--navy);color:#fff;font-size:.66rem;font-weight:800;display:grid;place-items:center}
 
   .anim{position:relative;width:100%;max-width:290px;margin:4px auto 0;aspect-ratio:1/1;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;overflow:hidden}
-  .anim img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+  .anim img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity .22s ease}
   .anim .af--b{opacity:0}
   .ex__anim:not([hidden]) .anim .af--b{animation:frameflip 1.4s infinite}
   @keyframes frameflip{0%,49.9%{opacity:0}50%,100%{opacity:1}}
@@ -203,7 +203,7 @@
     {id:'d2e4',nm:'Face pull',sets:3,reps:'15–20',rir:'0–1',rest:'60 s',an:'Face_Pull',ap:'Polia na altura do rosto + corda. Saúde do ombro.',st:['Puxe as duas pontas em direção às têmporas.','Gire os punhos pra fora no fim; aperte a escápula.'],er:'cotovelos caídos pra baixo.',alt:'Elástico preso numa grade.'},
     {id:'d2e5',nm:S+'Tríceps testa (atrás da cabeça)',sets:3,reps:'8–12',rir:'0–1',rest:'75 s',an:'Lying_Close-Grip_Barbell_Triceps_Extension_Behind_The_Head',ap:'Banco reto + barra W.',st:['Braços sobre o peito, inclinados um pouco pra trás.','Desça a barra à testa e um pouco atrás da cabeça.','Cotovelos fixos apontando pra frente; estenda.'],er:'cotovelos abrindo; mexer o ombro.',alt:'Testa com halteres ou corda deitado.'},
     {id:'d2e6',nm:'Tríceps pushdown corda',sets:3,reps:'12–20',rir:'0',rest:'60 s',an:'Triceps_Pushdown_-_Rope_Attachment',ap:'Polia alta com corda.',st:['Cotovelos colados ao corpo.','Estenda pra baixo; afaste as pontas no fim.','Volte só até ~90°.'],er:'cotovelo saindo do corpo.',alt:'Pushdown com barra.'},
-    {id:'d2e7',nm:S+'Levantamento terra romeno (RDL)',sets:3,reps:'8–12',rir:'1–2',rest:'2 min',an:'Romanian_Deadlift',ap:'Barra (ou halteres).',st:['Joelhos levemente flexionados e fixos.','Empurre o quadril pra trás, barra rente à perna.','Desça até alongar o posterior; suba com o quadril.'],er:'arredondar a lombar; virar agachamento.',alt:'RDL com halteres.'},
+    {id:'d2e7',nm:'Elevação pélvica (hip thrust)',bd:'Glúteo',sets:3,reps:'8–12',rir:'1–2',rest:'2 min',an:'Barbell_Hip_Thrust',ap:'Barra sobre o quadril (use um pad) + banco nas costas.',st:['Escápulas apoiadas na borda do banco, barra na dobra do quadril, pés firmes na largura dos ombros.','Suba o quadril até o tronco ficar paralelo ao chão.','Aperte o glúteo 1 s no topo; desça controlado sem encostar o quadril no chão.'],er:'hiperestender a lombar no topo; empurrar na ponta do pé; subir pouco.',alt:'Elevação pélvica na máquina, ou glute bridge no chão.'},
     {id:'d2e8',nm:S+'Panturrilha em pé',sets:3,reps:'10–15',rir:'0–1',rest:'60 s',an:'Standing_Calf_Raises',ap:'Máquina de panturrilha em pé.',st:['Desça o calcanhar até o alongamento máximo (pausa 1 s).','Suba na ponta o mais alto possível.'],er:'quicar sem amplitude.',alt:'Panturrilha no leg press.'}
    ]},
    {id:'dia3',name:'Puxar + Braço',sub:'(variação)',ex:[
@@ -251,7 +251,7 @@
     {id:'d2b4',nm:'Crucifixo inverso com halteres',sets:3,reps:'15–20',rir:'0–1',rest:'60 s',an:'Reverse_Flyes',ap:'2 halteres, tronco inclinado à frente.',st:['Tronco à frente, braços pendurados com leve flexão de cotovelo.','Abra levando os cotovelos pra trás/fora até a linha dos ombros.','Aperte o posterior do ombro; volte controlado.'],er:'puxar ao quadril (vira remada); balançar.',alt:'Peito apoiado num banco inclinado.'},
     {id:'d2b5',nm:S+'Tríceps testa com halteres',sets:3,reps:'8–12',rir:'0–1',rest:'75 s',an:'Lying_Dumbbell_Tricep_Extension',ap:'Banco + 2 halteres.',st:['Deitado, halteres sobre o peito, palmas frente a frente.','Desça flexionando só o cotovelo em direção às orelhas.','Cotovelos parados apontando pra frente; estenda.'],er:'abrir os cotovelos; mexer o ombro.',alt:'Francês sentado com 1 halter, se o ombro deixar.'},
     {id:'d2b6',nm:'Tríceps coice (kickback) com halter',sets:3,reps:'12–20',rir:'0',rest:'60 s',an:'Tricep_Dumbbell_Kickback',ap:'1 halter + apoio (banco ou mão na coxa).',st:['Tronco inclinado, cotovelo alto e colado, dobrado a 90°.','Estenda o antebraço pra trás até o braço ficar reto; aperte.','Volte devagar aos 90°.'],er:'deixar o cotovelo cair; mexer o ombro.',alt:'Os dois braços juntos, tronco apoiado no banco.'},
-    {id:'d2b7',nm:S+'RDL com halteres',sets:3,reps:'8–12',rir:'1–2',rest:'2 min',an:'Stiff-Legged_Dumbbell_Deadlift',ap:'2 halteres.',st:['Joelhos levemente flexionados e fixos; halteres à frente das coxas.','Empurre o quadril pra trás, descendo os halteres rente às pernas.','Desça até alongar o posterior; suba com o quadril.'],er:'arredondar a lombar; virar agachamento.',alt:'Unilateral (uma perna) pra mais alongamento.'},
+    {id:'d2b7',nm:'Elevação pélvica com halter',bd:'Glúteo',sets:3,reps:'10–15',rir:'1–2',rest:'90 s',an:'Barbell_Hip_Thrust',ap:'1 halter sobre o quadril + banco (ou glute bridge no chão).',st:['Escápulas na borda do banco, halter seguro na dobra do quadril, pés firmes.','Suba o quadril até o tronco paralelo ao chão; aperte o glúteo 1 s.','Desça controlado sem encostar no chão.'],er:'hiperestender a lombar; subir na ponta do pé.',alt:'Glute bridge no chão (sem banco), peso do corpo ou halter no quadril.'},
     {id:'d2b8',nm:S+'Panturrilha em pé com halteres',sets:3,reps:'10–15',rir:'0–1',rest:'60 s',an:'Standing_Dumbbell_Calf_Raise',ap:'2 halteres, ponta do pé num step/anilha.',st:['Desça o calcanhar até alongar (pausa 1 s).','Suba na ponta o mais alto possível.'],er:'quicar sem amplitude.',alt:'Uma perna de cada vez, segurando 1 halter.'}
    ],
    dia3:[
@@ -381,16 +381,30 @@
 
   function loadAnim(box){
     if(box.getAttribute('data-loaded'))return;
-    var an=box.getAttribute('data-an'), holder=box.querySelector('.anim');
-    var a=new Image(), b=new Image();
-    a.className='af'; b.className='af af--b'; a.alt=''; b.alt='';
-    var done=0, fail=0;
-    function check(){ if(done+fail>=2){ var l=holder.querySelector('.anim__loading'); if(l)l.remove(); if(fail===2)holder.innerHTML='<div class="anim__loading">animação indisponível</div>'; } }
-    a.onload=function(){done++;check();}; b.onload=function(){done++;check();};
-    a.onerror=function(){fail++;check();}; b.onerror=function(){fail++;check();};
-    a.src=IMG+an+'/0.jpg'; b.src=IMG+an+'/1.jpg';
-    holder.appendChild(a); holder.appendChild(b);
     box.setAttribute('data-loaded','1');
+    var an=box.getAttribute('data-an'), holder=box.querySelector('.anim'), MAXF=8, frames=[];
+    function finish(){
+      var l=holder.querySelector('.anim__loading'); if(l)l.remove();
+      if(!frames.length){ holder.innerHTML='<div class="anim__loading">animação indisponível</div>'; return; }
+      frames.forEach(function(im,i){ im.className='af'; im.style.opacity=(i===0?'1':'0'); holder.appendChild(im); });
+      if(frames.length>1){
+        var i=0;
+        box._anim=setInterval(function(){
+          frames[i].style.opacity='0';
+          i=(i+1)%frames.length;
+          frames[i].style.opacity='1';
+        }, frames.length>2?620:700);
+      }
+    }
+    // detecta quantos quadros existem (0.jpg, 1.jpg, 2.jpg…) carregando em sequência
+    function probe(k){
+      if(k>=MAXF){finish();return;}
+      var im=new Image(); im.alt='';
+      im.onload=function(){ frames.push(im); probe(k+1); };
+      im.onerror=function(){ finish(); };
+      im.src=IMG+an+'/'+k+'.jpg';
+    }
+    probe(0);
   }
 
   function setRow(n,reps,kg){
