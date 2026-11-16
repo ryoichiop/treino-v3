@@ -79,8 +79,14 @@
   .chip .v{font-size:.9rem;font-weight:700;line-height:1.2}
   .ex__actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px}
   .ex__toggle{background:transparent;border:none;color:var(--gold);font-weight:600;font-size:.82rem;padding:0}
-  .ex__how,.ex__anim{margin-top:9px;font-size:.86rem;color:var(--muted)}
-  .ex__how[hidden],.ex__anim[hidden]{display:none}
+  .ex__how,.ex__anim,.ex__pq{margin-top:9px;font-size:.86rem;color:var(--muted)}
+  .ex__how[hidden],.ex__anim[hidden],.ex__pq[hidden]{display:none}
+  .ex__pq p{margin:7px 0;line-height:1.5}
+  .lbl.why{color:var(--gold)}.lbl.mus{color:#2a6fb0}.lbl.tip{color:#0a7d3c}
+  .loghead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .unitseg{display:inline-flex;margin-left:auto;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+  .unitseg .us{border:0;background:transparent;font:inherit;font-size:.72rem;font-weight:700;padding:3px 11px;color:var(--muted);cursor:pointer}
+  .unitseg .us.is-active{background:var(--navy);color:var(--navy-ink)}
   .ex__how b{color:var(--ink)}
   .ex__how .lbl{display:inline-block;font-size:.6rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--navy);
     background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:2px 6px;margin-right:6px}
@@ -191,13 +197,13 @@
 
   var DAYS=[
    {id:'dia1',name:'Puxar + Braço',sub:'(braço fresco)',ex:[
-    {id:'d1e1',nm:'Barra fixa supinada (chin-up)',bd:'Força',sets:4,reps:'prog.',rir:'2–3',rest:'2–3 min',an:'Chin-Up',ap:'Barra fixa. Sem peso; elástico ou gráviton se precisar.',st:['Pegada supinada (palmas pra você), largura dos ombros.','Pendure com os braços esticados, ombros encaixados.','Puxe levando o peito à barra, cotovelos pra baixo.','Suba até o queixo passar; desça até esticar.'],er:'balançar (kipping); não descer até o fim.',alt:'Puxada supinada na máquina.'},
-    {id:'d1e2',nm:'Remada curvada / cavalinho',sets:3,reps:'8–12',rir:'1–2',rest:'2 min',an:'Bent_Over_Barbell_Row',ap:'Barra ou máquina cavalinho.',st:['Tronco inclinado firme, coluna neutra.','Puxe os cotovelos pra trás, aperte a escápula.','Desça até os braços esticarem.'],er:'puxar só com o braço; arredondar a lombar.',alt:'Remada com halteres apoiado no banco.'},
-    {id:'d1e3',nm:'Puxada alta (soltar no topo)',sets:3,reps:'10–12',rir:'1',rest:'90 s',an:'Full_Range-Of-Motion_Lat_Pulldown',ap:'Máquina de puxada + barra.',st:['No topo, deixe o ombro subir um pouco (alonga a dorsal).','Puxe à parte alta do peito, cotovelos pra baixo.','Controle a volta até o alongamento.'],er:'puxar atrás da nuca; balançar.',alt:'Barra fixa assistida.'},
-    {id:'d1e4',nm:S+'Rosca inversa no cabo',bd:'Braquial',sets:3,reps:'10–15',rir:'0–1',rest:'75 s',an:'Reverse_Cable_Curl',ap:'Polia baixa + barra reta. Pegada pronada (palmas pra baixo).',st:['Pegada pronada, punho firme e reto.','Cotovelos colados ao corpo.','Suba sem deixar o punho cair; desça devagar.'],er:'quebrar o punho; usar impulso.',alt:'Rosca inversa com barra W.'},
-    {id:'d1e5',nm:'Rosca martelo (neutra)',bd:'Braquial',sets:3,reps:'10–15',rir:'0–1',rest:'60 s',an:'Hammer_Curls',ap:'2 halteres, pegada neutra.',st:['Polegar pra cima (pegada de martelo).','Cotovelos fixos ao lado; suba mantendo a pegada.','Aperte em cima; desça controlado.'],er:'girar o punho; balançar.',alt:'Martelo no cabo com corda.'},
-    {id:'d1e6',nm:S+'Rosca inclinada',bd:'Bíceps',sets:3,reps:'8–12',rir:'0–1',rest:'75 s',an:'Incline_Dumbbell_Curl',ap:'Banco inclinado 45–60° + halteres.',st:['Deixe os braços penderem atrás do corpo (alonga o bíceps).','Sem mexer o ombro, suba girando o punho.','Aperte 1 s; desça até esticar.'],er:'adiantar o cotovelo; não alongar.',alt:'Rosca Bayesian no cabo.'},
-    {id:'d1e7',nm:'Agachamento hack ou livre',sets:3,reps:'6–10',rir:'1–2',rest:'2–3 min',an:'Hack_Squat',ap:'Hack (mais simples) ou barra no rack.',st:['Pés na largura dos ombros.','Desça até a coxa passar do paralelo.','Joelhos acompanham a ponta dos pés; suba sem travar.'],er:'descer pouco; joelho pra dentro.',alt:'Leg press profundo.'}
+    {id:'d1e1',pq:{pra:'Puxada vertical fresca é teu maior construtor de largura de dorsal (o V que falta) e ainda banca bíceps e braquial de graça — dois alvos teus num movimento só. Também é teu objetivo de barra livre.',mus:'Dorsal (direta, principal); bíceps e braquial (direta, como flexores do cotovelo); redondo maior e romboides (indireta).',srr:'4 séries, 2–3 RIR: é força e prática de padrão, então fica longe da falha pra manter qualidade de rep e progredir na assistência (hoje você trava em ~3 livres).',dica:'Comece cada rep encaixando a escápula pra baixo antes de dobrar o cotovelo; desça até esticar 100% — a parte alongada é onde a dorsal mais cresce.'},nm:'Barra fixa supinada (chin-up)',bd:'Força',sets:4,reps:'prog.',rir:'2–3',rest:'2–3 min',an:'Chin-Up',ap:'Barra fixa. Sem peso; elástico ou gráviton se precisar.',st:['Pegada supinada (palmas pra você), largura dos ombros.','Pendure com os braços esticados, ombros encaixados.','Puxe levando o peito à barra, cotovelos pra baixo.','Suba até o queixo passar; desça até esticar.'],er:'balançar (kipping); não descer até o fim.',alt:'Puxada supinada na máquina.'},
+    {id:'d1e2',pq:{pra:'Espessura das costas (o meio que a puxada não pega) e mais volume indireto de bíceps. Completa o V por trás.',mus:'Dorsal, trapézio médio e romboides (direta); bíceps e braquial (indireta); eretores da lombar (estabilização).',srr:'3 × 8–12, 1–2 RIR: faixa de hipertrofia com carga que você controla sem roubar com a lombar.',dica:'Puxe levando o cotovelo pra trás (não pra cima) e aperte a escápula no fim; se a lombar começa a ceder, encerre a série.'},nm:'Remada curvada / cavalinho',sets:3,reps:'8–12',rir:'1–2',rest:'2 min',an:'Bent_Over_Barbell_Row',ap:'Barra ou máquina cavalinho.',st:['Tronco inclinado firme, coluna neutra.','Puxe os cotovelos pra trás, aperte a escápula.','Desça até os braços esticarem.'],er:'puxar só com o braço; arredondar a lombar.',alt:'Remada com halteres apoiado no banco.'},
+    {id:'d1e3',pq:{pra:'Reforça a largura num ângulo mais controlável que a barra, com ênfase no alongamento da dorsal no topo.',mus:'Dorsal (direta, principal); redondo maior (direta); bíceps e braquial (indireta).',srr:'3 × 10–12, 1 RIR: isolamento relativo da dorsal, dá pra chegar mais perto da falha com segurança.',dica:'No topo deixe o ombro subir junto (alonga a dorsal) e puxe à parte alta do peito — nunca atrás da nuca, que é ruim pro teu ombro AC.'},nm:'Puxada alta (soltar no topo)',sets:3,reps:'10–12',rir:'1',rest:'90 s',an:'Full_Range-Of-Motion_Lat_Pulldown',ap:'Máquina de puxada + barra.',st:['No topo, deixe o ombro subir um pouco (alonga a dorsal).','Puxe à parte alta do peito, cotovelos pra baixo.','Controle a volta até o alongamento.'],er:'puxar atrás da nuca; balançar.',alt:'Barra fixa assistida.'},
+    {id:'d1e4',pq:{pra:'Teu exercício número 1 de braquial: a pegada pronada é a que mais ativa o braquial, que engrossa o braço e empurra o pico do bíceps. É tua prioridade máxima.',mus:'Braquial e braquiorradial (direta, principal); bíceps (direta, menor); antebraço (indireta).',srr:'3 × 10–15, 0–1 RIR: músculo pequeno e resistente, responde a reps altas perto da falha; o cabo mantém tensão constante.',dica:'Punho firme e reto (não deixe cair) e cotovelo colado ao corpo; manter a palma pra baixo é o que direciona o estímulo pro braquial.'},nm:S+'Rosca inversa no cabo',bd:'Braquial',sets:3,reps:'10–15',rir:'0–1',rest:'75 s',an:'Reverse_Cable_Curl',ap:'Polia baixa + barra reta. Pegada pronada (palmas pra baixo).',st:['Pegada pronada, punho firme e reto.','Cotovelos colados ao corpo.','Suba sem deixar o punho cair; desça devagar.'],er:'quebrar o punho; usar impulso.',alt:'Rosca inversa com barra W.'},
+    {id:'d1e5',pq:{pra:'Segundo martelo do braquial, pegada neutra — mesma meta de engrossar o braço, num padrão livre que complementa a inversa.',mus:'Braquial e braquiorradial (direta, principal); bíceps (direta, parcial).',srr:'3 × 10–15, 0–1 RIR: alta repetição perto da falha pro braquial.',dica:'Polegar pra cima o tempo todo; suba sem balançar o tronco e controle a descida — o braquial responde bem à fase negativa.'},nm:'Rosca martelo (neutra)',bd:'Braquial',sets:3,reps:'10–15',rir:'0–1',rest:'60 s',an:'Hammer_Curls',ap:'2 halteres, pegada neutra.',st:['Polegar pra cima (pegada de martelo).','Cotovelos fixos ao lado; suba mantendo a pegada.','Aperte em cima; desça controlado.'],er:'girar o punho; balançar.',alt:'Martelo no cabo com corda.'},
+    {id:'d1e6',pq:{pra:'Aqui o bíceps é o alvo, alongado: no banco inclinado o braço fica atrás do corpo e estica a cabeça longa, a região que mais cresce com estiramento.',mus:'Bíceps, cabeça longa (direta, principal); braquial (indireta).',srr:'3 × 8–12, 0–1 RIR: faixa de hipertrofia; a posição alongada pede carga um pouco menor e controle.',dica:'Deixe os braços penderem atrás do corpo e não adiante o cotovelo; aperte 1 s em cima e desça até esticar total — o ganho está no fundo alongado.'},nm:S+'Rosca inclinada',bd:'Bíceps',sets:3,reps:'8–12',rir:'0–1',rest:'75 s',an:'Incline_Dumbbell_Curl',ap:'Banco inclinado 45–60° + halteres.',st:['Deixe os braços penderem atrás do corpo (alonga o bíceps).','Sem mexer o ombro, suba girando o punho.','Aperte 1 s; desça até esticar.'],er:'adiantar o cotovelo; não alongar.',alt:'Rosca Bayesian no cabo.'},
+    {id:'d1e7',pq:{pra:'Teu trabalho pesado de quadríceps do dia; perna distribuída (1 por dia) mantém a coxa crescendo sem roubar recuperação do braço. Fica no fim, como você quer.',mus:'Quadríceps (direta, principal); glúteo e adutores (direta, parcial); posterior e core (estabilização).',srr:'3 × 6–10, 1–2 RIR: composto pesado, faixa de força-hipertrofia; mais longe da falha porque é exigente (teu SOD2 recupera devagar).',dica:'Desça até a coxa passar do paralelo (amplitude = crescimento); joelhos acompanham a ponta dos pés e podem passar dela — não encurte por mito.'},nm:'Agachamento hack ou livre',sets:3,reps:'6–10',rir:'1–2',rest:'2–3 min',an:'Hack_Squat',ap:'Hack (mais simples) ou barra no rack.',st:['Pés na largura dos ombros.','Desça até a coxa passar do paralelo.','Joelhos acompanham a ponta dos pés; suba sem travar.'],er:'descer pouco; joelho pra dentro.',alt:'Leg press profundo.'}
    ]},
    {id:'dia2',name:'Empurrar + Tríceps',sub:'',ex:[
     {id:'d2e1',nm:S+'Supino inclinado halteres',sets:4,reps:'6–10',rir:'1–2',rest:'2–3 min',an:'Incline_Dumbbell_Press',ap:'Banco 30° + 2 halteres.',st:['Cotovelos a ~45° do tronco.','Desça buscando o alongamento do peito.','Empurre sem travar em cima.'],er:'descer pouco; travar no topo.',alt:'Supino inclinado na máquina.'},
@@ -316,11 +322,13 @@
     var alt=e.alt&&e.alt!=='—'?'<p><span class="lbl alt">Sem o aparelho</span>'+e.alt+'</p>':'';
     var how='<div class="ex__how" hidden><p><span class="lbl">Aparelho</span>'+e.ap+'</p>'+steps+'<p><span class="lbl err">Evite</span>'+e.er+'</p>'+alt+'</div>';
     var anim='<div class="ex__anim" hidden data-an="'+e.an+'"><div class="anim"><div class="anim__loading">carregando…</div></div><p class="anim__cap">'+(e.cap||'início ⇄ fim do movimento · fonte: free-exercise-db (domínio público)')+'</p></div>';
+    var pqBtn=e.pq?'<button class="ex__toggle" type="button" data-t="pq">Por quê ▸</button>':'';
+    var pq=e.pq?'<div class="ex__pq" hidden><p><span class="lbl why">Por que pra você</span>'+e.pq.pra+'</p><p><span class="lbl mus">Músculos</span>'+e.pq.mus+'</p><p><span class="lbl">Séries × reps</span>'+e.pq.srr+'</p><p><span class="lbl tip">Dica</span>'+e.pq.dica+'</p></div>':'';
     return '<article class="ex" data-id="'+e.id+'" data-sets="'+e.sets+'">'+
       '<h4 class="ex__name">'+e.nm+badge(e.bd)+'</h4>'+
       '<div class="ex__meta">'+meta+'</div>'+
-      '<div class="ex__actions"><button class="ex__toggle" type="button" data-t="how">Como fazer ▾</button><button class="ex__toggle" type="button" data-t="anim">Ver animação ▸</button></div>'+
-      how+anim+'<div class="ex__log" hidden></div></article>';
+      '<div class="ex__actions">'+pqBtn+'<button class="ex__toggle" type="button" data-t="how">Como fazer ▾</button><button class="ex__toggle" type="button" data-t="anim">Ver animação ▸</button></div>'+
+      how+anim+pq+'<div class="ex__log" hidden></div></article>';
   }
   function dayHtml(d,i){
     var head='<div class="daybar"><span class="n">Dia '+(i+1)+'</span><h2>'+d.name+(d.sub?' <span class="sub">'+d.sub+'</span>':'')+'</h2></div>';
@@ -371,14 +379,16 @@
     var t=ev.target.closest('.ex__toggle');
     if(t){
       var kind=t.getAttribute('data-t'), art=t.closest('.ex');
-      var box=art.querySelector(kind==='how'?'.ex__how':'.ex__anim');
+      var box=art.querySelector(kind==='how'?'.ex__how':(kind==='pq'?'.ex__pq':'.ex__anim'));
       var open=box.hasAttribute('hidden');
       if(open){ if(kind==='anim')loadAnim(box); box.removeAttribute('hidden'); }
       else box.setAttribute('hidden','');
       if(kind==='how')t.textContent=open?'Como fazer ▴':'Como fazer ▾';
+      else if(kind==='pq')t.textContent=open?'Por quê ▾':'Por quê ▸';
       else t.textContent=open?'Ocultar animação ▾':'Ver animação ▸';
       return;
     }
+    var uu=ev.target.closest('[data-u]'); if(uu){setUnit(uu);return;}
     var go=ev.target.closest('[data-go]'); if(go){show(go.getAttribute('data-go'));return;}
     var stt=ev.target.closest('[data-start]'); if(stt){startSession(stt.getAttribute('data-start'));return;}
     var md=ev.target.closest('[data-mode]'); if(md){switchMode(md);return;}
@@ -424,6 +434,13 @@
       '<span class="fld"><input class="in in-kg" type="number" inputmode="decimal" min="0" step="0.5" placeholder="kg" value="'+kv+'" aria-label="carga série '+n+'"><span class="u">kg</span></span></div>';
   }
   function addRow(rowsEl){var n=rowsEl.children.length+1;var w=document.createElement('div');w.innerHTML=setRow(n);rowsEl.appendChild(w.firstChild);}
+  function setUnit(btn){
+    var ex=btn.closest('.ex'), unit=btn.getAttribute('data-u');
+    ex.setAttribute('data-unit',unit);
+    [].slice.call(ex.querySelectorAll('.unitseg .us')).forEach(function(b){b.classList.toggle('is-active',b===btn);});
+    [].slice.call(ex.querySelectorAll('.in-kg')).forEach(function(inp){inp.setAttribute('placeholder',unit==='placas'?'placas':'kg');});
+    [].slice.call(ex.querySelectorAll('.setrow .u')).forEach(function(s){s.textContent=unit==='placas'?'pl':'kg';});
+  }
 
   function switchMode(btn){
     var mode=btn.getAttribute('data-mode'), panel=btn.closest('.panel'), dayId=panel.getAttribute('data-panel');
@@ -440,8 +457,8 @@
       var n=parseInt(ex.getAttribute('data-sets'),10)||3;
       var log=ex.querySelector('.ex__log');
       var rows='';for(var i=1;i<=n;i++)rows+=setRow(i);
-      log.innerHTML='<div class="loghead">Registro de hoje — reps × carga</div><div class="rows">'+rows+'</div><button class="addset" type="button">+ série</button><textarea class="in-obs" rows="2" placeholder="observações sobre esse exercício (opcional)…"></textarea>';
-      log.removeAttribute('hidden'); ex.classList.add('logging');
+      log.innerHTML='<div class="loghead"><span>Registro de hoje — reps × carga</span><span class="unitseg"><button type="button" class="us is-active" data-u="kg">kg</button><button type="button" class="us" data-u="placas">placas</button></span></div><div class="rows">'+rows+'</div><button class="addset" type="button">+ série</button><textarea class="in-obs" rows="2" placeholder="observações sobre esse exercício (opcional)…"></textarea>';
+      log.removeAttribute('hidden'); ex.classList.add('logging'); ex.setAttribute('data-unit','kg');
     });
     var btn=panel.querySelector('[data-start]'); btn.textContent='Treino em andamento…'; btn.disabled=true; btn.style.opacity='.6';
     document.getElementById('savebar').hidden=false;
@@ -457,7 +474,7 @@
         if(reps!==''||kg!=='')sets.push({reps:reps===''?null:Number(reps),kg:kg===''?null:Number(kg)});
       });
       var obsEl=ex.querySelector('.in-obs');
-      entries[id]={nm:stripStar(byId[id].nm),sets:sets,obs:obsEl?obsEl.value.trim():''};
+      entries[id]={nm:stripStar(byId[id].nm),sets:sets,obs:obsEl?obsEl.value.trim():'',unit:(ex.getAttribute('data-unit')||'kg')};
     });
     return entries;
   }
@@ -485,8 +502,9 @@
     list.forEach(function(ex){
       var e=sess.entries[ex.id]||{nm:stripStar(ex.nm),sets:[],obs:''};
       var nm=stripStar(e.nm||ex.nm);
-      if(!e.sets||!e.sets.length){ rows.push({exId:ex.id,exercicio:nm,serie:0,reps:'',carga:'',obs:e.obs||''}); }
-      else e.sets.forEach(function(s,i){ rows.push({exId:ex.id,exercicio:nm,serie:i+1,reps:(s.reps==null?'':s.reps),carga:(s.kg==null?'':s.kg),obs:(i===0?(e.obs||''):'')}); });
+      var uTag=(e.unit==='placas'?'[placas] ':'');
+      if(!e.sets||!e.sets.length){ rows.push({exId:ex.id,exercicio:nm,serie:0,reps:'',carga:'',obs:uTag+(e.obs||'')}); }
+      else e.sets.forEach(function(s,i){ rows.push({exId:ex.id,exercicio:nm,serie:i+1,reps:(s.reps==null?'':s.reps),carga:(s.kg==null?'':s.kg),obs:(i===0?uTag+(e.obs||''):'')}); });
     });
     return {key:SYNC_KEY,ts:sess.ts,savedAt:new Date().toISOString(),date:sess.date,dia:sess.dayId,diaNome:sess.dayName,modo:(sess.variant||'full'),rows:rows};
   }
@@ -513,7 +531,8 @@
   function sessLine(e){
     var obs=e.obs?' <span class="obsnote">— '+esc(e.obs)+'</span>':'';
     if(!e.sets.length)return '<div class="sess__line"><span class="exn">'+esc(e.nm)+':</span> <span class="sk">— não feito</span>'+obs+'</div>';
-    var parts=e.sets.map(function(s){var r=(s.reps==null?'–':s.reps);var k=(s.kg==null?'–':(s.kg===0?'PC':s.kg+'kg'));return r+'×'+k;});
+    var un=(e.unit==='placas'?' pl':'kg');
+    var parts=e.sets.map(function(s){var r=(s.reps==null?'–':s.reps);var k=(s.kg==null?'–':(s.kg===0?'PC':s.kg+un));return r+'×'+k;});
     return '<div class="sess__line"><span class="exn">'+esc(e.nm)+':</span> '+parts.join(', ')+obs+'</div>';
   }
   function renderHist(){
@@ -565,7 +584,7 @@
         if(reps!==''||kg!=='')sets.push({reps:reps===''?null:Number(reps),kg:kg===''?null:Number(kg)});
       });
       var obsEl=ee.querySelector('.in-obs');
-      entries[id]={nm:stripStar((byId[id]&&byId[id].nm)||(s.entries[id]&&s.entries[id].nm)||id),sets:sets,obs:obsEl?obsEl.value.trim():''};
+      entries[id]={nm:stripStar((byId[id]&&byId[id].nm)||(s.entries[id]&&s.entries[id].nm)||id),sets:sets,obs:obsEl?obsEl.value.trim():'',unit:((s.entries[id]&&s.entries[id].unit)||'kg')};
     });
     s.entries=entries;
     var de=card.querySelector('.ee__date'); if(de){var pd=parseDate(de.value); if(pd){s.date=fmtDate(pd); s.ts=pd.getTime();}}
