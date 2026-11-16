@@ -128,6 +128,9 @@
   .histhead h2{margin:0;font-size:1.15rem;margin-right:auto}
   .sess{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px}
   .sess__top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .syncbadge{font-size:.68rem;font-weight:700;letter-spacing:.02em;padding:1px 7px;border-radius:999px;white-space:nowrap}
+  .syncbadge.is-ok{color:#0a7d3c;background:rgba(16,160,72,.12)}
+  .syncbadge.is-pending{color:#8a5a00;background:rgba(214,158,46,.16)}
   .sess__date{font-weight:700}
   .sess__day{font-size:.8rem;color:var(--muted)}
   .sess__edit{margin-left:auto;background:transparent;border:none;color:var(--gold);font-size:.8rem;font-weight:600}
@@ -288,6 +291,12 @@
   var KEY='treinoLogV3';
   function loadLog(){try{return JSON.parse(localStorage.getItem(KEY))||[];}catch(e){return[];}}
   function saveLog(a){try{localStorage.setItem(KEY,JSON.stringify(a));}catch(e){}}
+  var SKEY='treinoSyncedV3';
+  function loadSynced(){try{return JSON.parse(localStorage.getItem(SKEY))||[];}catch(e){return[];}}
+  function saveSynced(a){try{localStorage.setItem(SKEY,JSON.stringify(a));}catch(e){}}
+  function isSynced(ts){return loadSynced().indexOf(ts)>=0;}
+  function markSynced(ts){var a=loadSynced();if(a.indexOf(ts)<0){a.push(ts);saveSynced(a);}}
+  function unmarkSynced(ts){saveSynced(loadSynced().filter(function(x){return x!==ts;}));}
   function stripStar(s){return s.replace(/<[^>]+>/g,'').replace('★','').trim();}
   function esc(s){return String(s==null?'':s).replace(/[&<>]/g,function(c){return c==='&'?'&amp;':c==='<'?'&lt;':'&gt;';});}
   function parseDate(s){var m=/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec((s||'').trim());if(!m)return null;var d=new Date(+m[3],+m[2]-1,+m[1],12,0,0);return isNaN(d.getTime())?null:d;}
@@ -468,9 +477,8 @@
     document.getElementById('savebar').hidden=true; activeDay=null;
   }
 
-  function postSync(payload){ if(!SYNC_URL)return; try{ fetch(SYNC_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}); }catch(e){} }
-  function syncSession(sess){
-    if(!SYNC_URL)return;
+  function postSync(payload){ if(!SYNC_URL)return Promise.reject(); try{ return fetch(SYNC_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}); }catch(e){ return Promise.reject(e); } }
+  function buildPayload(sess){
     var day=DAYS.filter(function(d){return d.id===sess.dayId;})[0];
     var list=day?(sess.variant==='db'&&day.exDB?day.exDB:day.ex):[];
     var rows=[];
@@ -480,9 +488,28 @@
       if(!e.sets||!e.sets.length){ rows.push({exId:ex.id,exercicio:nm,serie:0,reps:'',carga:'',obs:e.obs||''}); }
       else e.sets.forEach(function(s,i){ rows.push({exId:ex.id,exercicio:nm,serie:i+1,reps:(s.reps==null?'':s.reps),carga:(s.kg==null?'':s.kg),obs:(i===0?(e.obs||''):'')}); });
     });
-    postSync({key:SYNC_KEY,ts:sess.ts,savedAt:new Date().toISOString(),date:sess.date,dia:sess.dayId,diaNome:sess.dayName,modo:(sess.variant||'full'),rows:rows});
+    return {key:SYNC_KEY,ts:sess.ts,savedAt:new Date().toISOString(),date:sess.date,dia:sess.dayId,diaNome:sess.dayName,modo:(sess.variant||'full'),rows:rows};
   }
-  function syncDelete(ts){ postSync({key:SYNC_KEY,ts:ts,rows:[]}); }
+  function syncSession(sess){
+    if(!SYNC_URL)return;
+    postSync(buildPayload(sess)).then(function(){ markSynced(sess.ts); refreshSyncBadges(); }).catch(function(){ refreshSyncBadges(); });
+  }
+  function refreshSyncBadges(){
+    [].slice.call(document.querySelectorAll('.sess[data-ts]')).forEach(function(card){
+      var ts=Number(card.getAttribute('data-ts')), b=card.querySelector('.syncbadge'); if(!b)return;
+      var ok=isSynced(ts);
+      b.textContent=ok?'✓ sincronizado':'⏳ pendente';
+      b.className='syncbadge '+(ok?'is-ok':'is-pending');
+    });
+  }
+  function flushPending(){
+    if(!SYNC_URL)return;
+    var synced=loadSynced();
+    loadLog().forEach(function(sess){
+      if(synced.indexOf(sess.ts)<0){ postSync(buildPayload(sess)).then(function(){ markSynced(sess.ts); refreshSyncBadges(); }).catch(function(){}); }
+    });
+  }
+  function syncDelete(ts){ unmarkSynced(ts); if(SYNC_URL){ postSync({key:SYNC_KEY,ts:ts,rows:[]}).catch(function(){}); } }
   function sessLine(e){
     var obs=e.obs?' <span class="obsnote">— '+esc(e.obs)+'</span>':'';
     if(!e.sets.length)return '<div class="sess__line"><span class="exn">'+esc(e.nm)+':</span> <span class="sk">— não feito</span>'+obs+'</div>';
@@ -499,7 +526,7 @@
         var list=day?(s.variant==='db'&&day.exDB?day.exDB:day.ex):[];
         var lines=list.map(function(ex){var e=s.entries[ex.id]||{nm:stripStar(ex.nm),sets:[]};return sessLine(e);}).join('');
         var tag=(s.variant==='db'?' · só halteres':'');
-        return '<div class="sess" data-ts="'+s.ts+'"><div class="sess__top"><span class="sess__date">'+esc(s.date)+'</span><span class="sess__day">'+esc(s.dayName)+tag+'</span><button class="sess__edit" data-edit="'+s.ts+'">editar</button><button class="sess__del" data-del="'+s.ts+'">excluir</button></div><div class="sess__body">'+lines+'</div></div>';
+        return '<div class="sess" data-ts="'+s.ts+'"><div class="sess__top"><span class="sess__date">'+esc(s.date)+'</span><span class="sess__day">'+esc(s.dayName)+tag+'</span><span class="syncbadge '+(isSynced(s.ts)?'is-ok':'is-pending')+'">'+(isSynced(s.ts)?'✓ sincronizado':'⏳ pendente')+'</span><button class="sess__edit" data-edit="'+s.ts+'">editar</button><button class="sess__del" data-del="'+s.ts+'">excluir</button></div><div class="sess__body">'+lines+'</div></div>';
       }).join('');
     }
     panels.hist.innerHTML=h;
@@ -542,7 +569,7 @@
     });
     s.entries=entries;
     var de=card.querySelector('.ee__date'); if(de){var pd=parseDate(de.value); if(pd){s.date=fmtDate(pd); s.ts=pd.getTime();}}
-    saveLog(log); syncSession(s); toast('Alterações salvas ✓'); renderHist();
+    saveLog(log); unmarkSynced(s.ts); syncSession(s); toast('Alterações salvas ✓'); renderHist();
   }
   function summaryText(){
     var log=loadLog().slice().sort(function(a,b){return a.ts-b.ts;});
@@ -581,6 +608,7 @@
   modal.addEventListener('click',function(e){if(e.target===modal)modal.classList.remove('show');});
 
   show('inicio');
+  flushPending();
 })();
 </script>
 </body>
