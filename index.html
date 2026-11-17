@@ -74,6 +74,14 @@
     padding:2px 6px;border-radius:5px;margin-left:5px;color:var(--strength);background:var(--strength-bg)}
   .badge.b{color:#6D4AAE;background:#ECE6F7}
   .ex__meta{display:flex;flex-wrap:wrap;gap:7px;margin:9px 0 0}
+  .ex__sug{margin-top:8px;font-size:.78rem;line-height:1.45;color:var(--muted)}
+  .ex__sug:empty{display:none}
+  .ex__sug .sug__last{color:var(--ink);font-weight:600}
+  .ex__sug .sug__ref{color:#2a6fb0;font-weight:600}
+  .ex__sug .sug__adv{color:var(--gold);font-weight:700}
+  .ex__sug b{color:var(--gold)}
+  .ex__sug i{font-style:normal;color:var(--faint);font-weight:400}
+  .ex__sug .sug__none{color:var(--faint)}
   .chip{display:inline-flex;flex-direction:column;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:4px 9px}
   .chip .k{font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);font-weight:700}
   .chip .v{font-size:.9rem;font-weight:700;line-height:1.2}
@@ -293,7 +301,7 @@
    ]
   };
   DAYS.forEach(function(d){d.exDB=DAYSDB[d.id]||[];});
-  var byId={}; DAYS.forEach(function(d){d.ex.concat(d.exDB).forEach(function(e){byId[e.id]={dayName:d.name,nm:e.nm};});});
+  var byId={}; DAYS.forEach(function(d){d.ex.concat(d.exDB).forEach(function(e){byId[e.id]={dayName:d.name,nm:e.nm,an:e.an,reps:e.reps,bd:e.bd||''};});});
 
   var KEY='treinoLogV3';
   function loadLog(){try{return JSON.parse(localStorage.getItem(KEY))||[];}catch(e){return[];}}
@@ -308,6 +316,51 @@
   function esc(s){return String(s==null?'':s).replace(/[&<>]/g,function(c){return c==='&'?'&amp;':c==='<'?'&lt;':'&gt;';});}
   function parseDate(s){var m=/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec((s||'').trim());if(!m)return null;var d=new Date(+m[3],+m[2]-1,+m[1],12,0,0);return isNaN(d.getTime())?null:d;}
   function fmtDate(d){var p=function(n){return(n<10?'0':'')+n;};return p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+d.getFullYear();}
+
+  // ---- Sugestão de carga: aprende do histórico logado (dupla progressão) ----
+  function logSorted(){return loadLog().slice().sort(function(a,b){return a.ts-b.ts;});}
+  function repRange(r){var m=String(r||'').match(/(\d+)\s*[–\-]\s*(\d+)/);if(m)return{lo:+m[1],hi:+m[2]};var s=String(r||'').match(/^\s*(\d+)\s*$/);if(s)return{lo:+s[1],hi:+s[1]};return null;}
+  function hasSets(e){return e&&e.sets&&e.sets.some(function(s){return s.reps!=null||s.kg!=null;});}
+  function topSet(sets){var best=null;(sets||[]).forEach(function(s){if(s.reps==null&&s.kg==null)return;if(!best){best=s;return;}var bk=(best.kg==null?-1:best.kg),sk=(s.kg==null?-1:s.kg);if(sk>bk||(sk===bk&&(s.reps||0)>(best.reps||0)))best=s;});return best;}
+  function lastEntryFor(exId){var log=logSorted();for(var i=log.length-1;i>=0;i--){var e=log[i].entries&&log[i].entries[exId];if(hasSets(e))return{entry:e,date:log[i].date};}return null;}
+  // similar = mesmo movimento (mesmo 'an'); ponte extra p/ a família do martelo (cabo/halter/inclinada/cross-body)
+  var SIMAN={'Cable_Hammer_Curls_-_Rope_Attachment':['Hammer_Curls','Incline_Hammer_Curls','Cross_Body_Hammer_Curl'],'Hammer_Curls':['Cable_Hammer_Curls_-_Rope_Attachment','Incline_Hammer_Curls','Cross_Body_Hammer_Curl'],'Incline_Hammer_Curls':['Hammer_Curls','Cross_Body_Hammer_Curl'],'Cross_Body_Hammer_Curl':['Hammer_Curls','Incline_Hammer_Curls']};
+  function similarLast(exId){
+    var an=(byId[exId]||{}).an; if(!an)return null;
+    var ans={}; ans[an]=1; (SIMAN[an]||[]).forEach(function(a){ans[a]=1;});
+    var ids=Object.keys(byId).filter(function(id){return id!==exId&&ans[(byId[id]||{}).an];});
+    var log=logSorted();
+    for(var i=log.length-1;i>=0;i--){for(var j=0;j<ids.length;j++){var e=log[i].entries&&log[i].entries[ids[j]];if(hasSets(e))return{entry:e,date:log[i].date,nm:(byId[ids[j]]||{}).nm||ids[j]};}}
+    return null;
+  }
+  function round05(x){return Math.round(x*2)/2;}
+  function suggestFor(exId){
+    var meta=byId[exId]||{}, rng=repRange(meta.reps);
+    var hit=lastEntryFor(exId), sim=false, srcNm=null;
+    if(!hit){var r=similarLast(exId); if(r){hit={entry:r.entry,date:r.date}; sim=true; srcNm=stripStar(r.nm);}}
+    if(!hit)return {none:true};
+    var e=hit.entry, unit=(e.unit||'kg'), un=(unit==='placas'?'pl':'kg'), top=topSet(e.sets);
+    if(!top)return {none:true};
+    var bw=(top.kg===0||top.kg==null);
+    var lastStr=(top.reps==null?'–':top.reps)+(bw?' reps':('×'+top.kg+un));
+    var advice, sugKg=null;
+    if(bw){ advice='+1–2 reps'; }
+    else if(rng&&top.reps!=null&&top.reps>=rng.hi){ var step=(unit==='placas')?1:(rng.hi<=10?4:2); sugKg=round05(top.kg+step); advice='subir p/ <b>'+sugKg+un+'</b> ↑'; }
+    else if(rng&&top.reps!=null&&top.reps<rng.lo){ sugKg=top.kg; advice='repetir <b>'+top.kg+un+'</b> (fechar '+rng.lo+')'; }
+    else { sugKg=top.kg; advice='manter <b>'+top.kg+un+'</b>, +reps'; }
+    return {none:false, sim:sim, srcNm:srcNm, lastStr:lastStr, date:hit.date, advice:advice, sugKg:sugKg, unit:unit};
+  }
+  function sugHtml(exId){
+    var s=suggestFor(exId);
+    if(s.none)return '<span class="sug__none">sem histórico ainda — registre hoje pra eu sugerir na próxima</span>';
+    if(s.sim)return '<span class="sug__ref">~ referência: '+s.lastStr+' <i>('+esc(s.srcNm)+', '+s.date+')</i></span> <span class="sug__adv">• comece por aí e ajuste</span>';
+    return '<span class="sug__last">última: '+s.lastStr+' <i>('+s.date+')</i></span> <span class="sug__adv">• '+s.advice+'</span>';
+  }
+  function refreshSuggestions(root){
+    [].slice.call((root||document).querySelectorAll('.ex[data-id]')).forEach(function(ex){
+      var box=ex.querySelector('.ex__sug'); if(box)box.innerHTML=sugHtml(ex.getAttribute('data-id'));
+    });
+  }
 
   var main=document.getElementById('main'), tabs=document.getElementById('tabs');
   var activeDay=null, dayMode={};
@@ -328,6 +381,7 @@
     return '<article class="ex" data-id="'+e.id+'" data-sets="'+e.sets+'">'+
       '<h4 class="ex__name">'+e.nm+badge(e.bd)+'</h4>'+
       '<div class="ex__meta">'+meta+'</div>'+
+      '<div class="ex__sug" aria-live="polite"></div>'+
       '<div class="ex__actions">'+pqBtn+'<button class="ex__toggle" type="button" data-t="how">Como fazer ▾</button><button class="ex__toggle" type="button" data-t="anim">Ver animação ▸</button></div>'+
       how+anim+pq+'<div class="ex__log" hidden></div></article>';
   }
@@ -369,6 +423,7 @@
 
   var panels={};
   [].slice.call(document.querySelectorAll('[data-panel]')).forEach(function(p){panels[p.getAttribute('data-panel')]=p;});
+  refreshSuggestions();
   function show(id){
     [].slice.call(tabs.children).forEach(function(b){b.classList.toggle('is-active',b.dataset.p===id);});
     Object.keys(panels).forEach(function(k){panels[k].hidden=(k!==id);});
@@ -427,14 +482,16 @@
     probe(0);
   }
 
-  function setRow(n,reps,kg){
+  function setRow(n,reps,kg,ph,unit){
     var rv=(reps==null?'':reps), kv=(kg==null?'':kg);
+    var kph=(ph!=null&&ph!=='')?ph:(unit==='placas'?'placas':'kg');
+    var ulab=(unit==='placas'?'pl':'kg');
     return '<div class="setrow"><span class="setn">'+n+'</span>'+
       '<span class="fld"><input class="in in-reps" type="number" inputmode="numeric" min="0" placeholder="reps" value="'+rv+'" aria-label="reps série '+n+'"></span>'+
       '<span class="x">×</span>'+
-      '<span class="fld"><input class="in in-kg" type="number" inputmode="decimal" min="0" step="0.5" placeholder="kg" value="'+kv+'" aria-label="carga série '+n+'"><span class="u">kg</span></span></div>';
+      '<span class="fld"><input class="in in-kg" type="number" inputmode="decimal" min="0" step="0.5" placeholder="'+kph+'" value="'+kv+'" aria-label="carga série '+n+'"><span class="u">'+ulab+'</span></span></div>';
   }
-  function addRow(rowsEl){var n=rowsEl.children.length+1;var w=document.createElement('div');w.innerHTML=setRow(n);rowsEl.appendChild(w.firstChild);}
+  function addRow(rowsEl){var n=rowsEl.children.length+1;var ex=rowsEl.closest('.ex');var unit=(ex&&ex.getAttribute('data-unit'))||'kg';var first=rowsEl.querySelector('.in-kg');var ph=first?first.getAttribute('placeholder'):null;var w=document.createElement('div');w.innerHTML=setRow(n,null,null,ph,unit);rowsEl.appendChild(w.firstChild);}
   function setUnit(btn){
     var ex=btn.closest('.ex'), unit=btn.getAttribute('data-u');
     ex.setAttribute('data-unit',unit);
@@ -450,6 +507,7 @@
     [].slice.call(panel.querySelectorAll('.mode')).forEach(function(b){b.classList.toggle('is-active',b===btn);});
     dayMode[dayId]=mode;
     panel.querySelector('.exwrap').innerHTML=(mode==='db'?day.exDB:day.ex).map(exHtml).join('');
+    refreshSuggestions(panel);
   }
   function startSession(dayId){
     activeDay=dayId;
@@ -457,9 +515,13 @@
     [].slice.call(panel.querySelectorAll('.ex')).forEach(function(ex){
       var n=parseInt(ex.getAttribute('data-sets'),10)||3;
       var log=ex.querySelector('.ex__log');
-      var rows='';for(var i=1;i<=n;i++)rows+=setRow(i);
-      log.innerHTML='<div class="loghead"><span>Registro de hoje — reps × carga</span><span class="unitseg"><button type="button" class="us is-active" data-u="kg">kg</button><button type="button" class="us" data-u="placas">placas</button></span></div><div class="rows">'+rows+'</div><button class="addset" type="button">+ série</button><textarea class="in-obs" rows="2" placeholder="observações sobre esse exercício (opcional)…"></textarea>';
-      log.removeAttribute('hidden'); ex.classList.add('logging'); ex.setAttribute('data-unit','kg');
+      var sug=suggestFor(ex.getAttribute('data-id'));
+      var unit=(sug&&!sug.none&&sug.unit)?sug.unit:'kg';
+      var ph=(sug&&!sug.none&&sug.sugKg!=null)?String(sug.sugKg):'';
+      var rows='';for(var i=1;i<=n;i++)rows+=setRow(i,null,null,ph,unit);
+      var kgA=(unit==='kg'?' is-active':''), plA=(unit==='placas'?' is-active':'');
+      log.innerHTML='<div class="loghead"><span>Registro de hoje — reps × carga</span><span class="unitseg"><button type="button" class="us'+kgA+'" data-u="kg">kg</button><button type="button" class="us'+plA+'" data-u="placas">placas</button></span></div><div class="rows">'+rows+'</div><button class="addset" type="button">+ série</button><textarea class="in-obs" rows="2" placeholder="observações sobre esse exercício (opcional)…"></textarea>';
+      log.removeAttribute('hidden'); ex.classList.add('logging'); ex.setAttribute('data-unit',unit);
     });
     var btn=panel.querySelector('[data-start]'); btn.textContent='Treino em andamento…'; btn.disabled=true; btn.style.opacity='.6';
     document.getElementById('savebar').hidden=false;
@@ -484,7 +546,7 @@
     var d=new Date(), day=DAYS.filter(function(x){return x.id===activeDay;})[0];
     var sess={ts:d.getTime(),date:fmtDate(d),dayId:activeDay,dayName:day.name,variant:(dayMode[activeDay]||'full'),entries:collect(activeDay)};
     var log=loadLog(); log.push(sess); saveLog(log);
-    syncSession(sess); endSession(); toast('Treino salvo ✓'); show('hist');
+    syncSession(sess); endSession(); refreshSuggestions(); toast('Treino salvo ✓'); show('hist');
   });
   document.getElementById('btnCancel').addEventListener('click',function(){endSession();toast('Cancelado');});
   function endSession(){
@@ -589,7 +651,7 @@
     });
     s.entries=entries;
     var de=card.querySelector('.ee__date'); if(de){var pd=parseDate(de.value); if(pd){s.date=fmtDate(pd); s.ts=pd.getTime();}}
-    saveLog(log); unmarkSynced(s.ts); syncSession(s); toast('Alterações salvas ✓'); renderHist();
+    saveLog(log); unmarkSynced(s.ts); syncSession(s); refreshSuggestions(); toast('Alterações salvas ✓'); renderHist();
   }
   function summaryText(){
     var log=loadLog().slice().sort(function(a,b){return a.ts-b.ts;});
