@@ -82,6 +82,7 @@
   .ex__sug b{color:var(--gold)}
   .ex__sug i{font-style:normal;color:var(--faint);font-weight:400}
   .ex__sug .sug__none{color:var(--faint)}
+  .ex__sug .sug__plan{display:inline-block;font-size:.64rem;font-weight:700;background:#2a6fb0;color:#fff;border-radius:4px;padding:0 4px;margin:0 1px;vertical-align:1px;letter-spacing:.02em}
   .chip{display:inline-flex;flex-direction:column;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:4px 9px}
   .chip .k{font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);font-weight:700}
   .chip .v{font-size:.9rem;font-weight:700;line-height:1.2}
@@ -323,6 +324,21 @@
   function hasSets(e){return e&&e.sets&&e.sets.some(function(s){return s.reps!=null||s.kg!=null;});}
   function topSet(sets){var best=null;(sets||[]).forEach(function(s){if(s.reps==null&&s.kg==null)return;if(!best){best=s;return;}var bk=(best.kg==null?-1:best.kg),sk=(s.kg==null?-1:s.kg);if(sk>bk||(sk===bk&&(s.reps||0)>(best.reps||0)))best=s;});return best;}
   function lastEntryFor(exId){var log=logSorted();for(var i=log.length-1;i>=0;i--){var e=log[i].entries&&log[i].entries[exId];if(hasSets(e))return{entry:e,date:log[i].date};}return null;}
+  // ---- Ponte entre planos (v1/v2/v3 no MESMO origin): liga o mesmo exercício pelo NOME, já que os IDs mudam de plano pra plano ----
+  function normNm(s){s=stripStar(String(s||'')).toLowerCase();try{s=s.normalize('NFD').replace(/[̀-ͯ]/g,'');}catch(e){}return s.replace(/\([^)]*\)/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();}
+  var OLDLOGS=[{k:'treinoLogV2',plan:'v2'},{k:'treinoLog_v1',plan:'v1'}]; // mais novo primeiro
+  function loadOldLog(k){try{return JSON.parse(localStorage.getItem(k))||[];}catch(e){return[];}}
+  function scanByName(arr,tn){for(var i=arr.length-1;i>=0;i--){var E=arr[i].entries||{};for(var id in E){if(E.hasOwnProperty(id)&&hasSets(E[id])&&normNm(E[id].nm)===tn)return{entry:E[id],date:arr[i].date};}}return null;}
+  function directHit(exId){
+    var tn=normNm((byId[exId]||{}).nm), v3=logSorted();
+    for(var i=v3.length-1;i>=0;i--){var s=v3[i],E=s.entries||{};
+      if(hasSets(E[exId]))return{entry:E[exId],date:s.date,plan:'v3'};
+      if(tn){for(var id in E){if(E.hasOwnProperty(id)&&hasSets(E[id])&&normNm(E[id].nm)===tn)return{entry:E[id],date:s.date,plan:'v3'};}}
+    }
+    if(!tn)return null;
+    for(var p=0;p<OLDLOGS.length;p++){var arr=loadOldLog(OLDLOGS[p].k).slice().sort(function(a,b){return a.ts-b.ts;});var r=scanByName(arr,tn);if(r)return{entry:r.entry,date:r.date,plan:OLDLOGS[p].plan};}
+    return null;
+  }
   // similar = mesmo movimento (mesmo 'an'); ponte extra p/ a família do martelo (cabo/halter/inclinada/cross-body)
   var SIMAN={'Cable_Hammer_Curls_-_Rope_Attachment':['Hammer_Curls','Incline_Hammer_Curls','Cross_Body_Hammer_Curl'],'Hammer_Curls':['Cable_Hammer_Curls_-_Rope_Attachment','Incline_Hammer_Curls','Cross_Body_Hammer_Curl'],'Incline_Hammer_Curls':['Hammer_Curls','Cross_Body_Hammer_Curl'],'Cross_Body_Hammer_Curl':['Hammer_Curls','Incline_Hammer_Curls']};
   function similarLast(exId){
@@ -336,8 +352,8 @@
   function round05(x){return Math.round(x*2)/2;}
   function suggestFor(exId){
     var meta=byId[exId]||{}, rng=repRange(meta.reps);
-    var hit=lastEntryFor(exId), sim=false, srcNm=null;
-    if(!hit){var r=similarLast(exId); if(r){hit={entry:r.entry,date:r.date}; sim=true; srcNm=stripStar(r.nm);}}
+    var hit=directHit(exId), sim=false, srcNm=null, plan=(hit&&hit.plan)||'v3';
+    if(!hit){var r=similarLast(exId); if(r){hit={entry:r.entry,date:r.date}; sim=true; plan='v3'; srcNm=stripStar(r.nm);}}
     if(!hit)return {none:true};
     var e=hit.entry, unit=(e.unit||'kg'), un=(unit==='placas'?'pl':'kg'), top=topSet(e.sets);
     if(!top)return {none:true};
@@ -348,13 +364,14 @@
     else if(rng&&top.reps!=null&&top.reps>=rng.hi){ var step=(unit==='placas')?1:(rng.hi<=10?4:2); sugKg=round05(top.kg+step); advice='subir p/ <b>'+sugKg+un+'</b> ↑'; }
     else if(rng&&top.reps!=null&&top.reps<rng.lo){ sugKg=top.kg; advice='repetir <b>'+top.kg+un+'</b> (fechar '+rng.lo+')'; }
     else { sugKg=top.kg; advice='manter <b>'+top.kg+un+'</b>, +reps'; }
-    return {none:false, sim:sim, srcNm:srcNm, lastStr:lastStr, date:hit.date, advice:advice, sugKg:sugKg, unit:unit};
+    return {none:false, sim:sim, plan:plan, srcNm:srcNm, lastStr:lastStr, date:hit.date, advice:advice, sugKg:sugKg, unit:unit};
   }
   function sugHtml(exId){
     var s=suggestFor(exId);
     if(s.none)return '<span class="sug__none">sem histórico ainda — registre hoje pra eu sugerir na próxima</span>';
     if(s.sim)return '<span class="sug__ref">~ referência: '+s.lastStr+' <i>('+esc(s.srcNm)+', '+s.date+')</i></span> <span class="sug__adv">• comece por aí e ajuste</span>';
-    return '<span class="sug__last">última: '+s.lastStr+' <i>('+s.date+')</i></span> <span class="sug__adv">• '+s.advice+'</span>';
+    var tag=(s.plan&&s.plan!=='v3')?(' <span class="sug__plan">'+s.plan+'</span>'):'';
+    return '<span class="sug__last">última'+tag+': '+s.lastStr+' <i>('+s.date+')</i></span> <span class="sug__adv">• '+s.advice+'</span>';
   }
   function refreshSuggestions(root){
     [].slice.call((root||document).querySelectorAll('.ex[data-id]')).forEach(function(ex){
